@@ -7,107 +7,107 @@
 
 ## Antes de começar
 
-- [ ] Receber o arquivo `helpdesk_TRIO_NOMES.py` da Pessoa B
-- [ ] Rodar `python helpdesk_TRIO_NOMES.py` e confirmar que executa sem erros
-- [ ] Instalar Flask se necessário: `pip install flask`
-- [ ] Criar o arquivo `app.py` na mesma pasta que `helpdesk_TRIO_NOMES.py`
-- [ ] Confirmar com a Pessoa B quais exceções cada método pode lançar e qual código HTTP cada uma representa
+- [x] Receber o arquivo `helpdesk_TRIO_NOMES.py` da Pessoa B
+- [x] Rodar `python helpdesk_TRIO_NOMES.py` e confirmar que executa sem erros
+- [x] Instalar Flask se necessário: `pip install flask`
+- [x] Criar o arquivo `app.py` na mesma pasta que `helpdesk_TRIO_NOMES.py`
+- [x] Confirmar com a Pessoa B quais exceções cada método pode lançar e qual código HTTP cada uma representa
 
 ---
 
 ## Bloco 1 — Configuração inicial do `app.py`
 
-- [ ] Importar `Flask`, `request` e `jsonify` do flask
-- [ ] Importar `CentralDeSupporte` do arquivo da Pessoa A/B
-- [ ] Importar as três exceções customizadas: `ChamadoNaoEncontradoException`, `CapacidadeExcedidaException`, `TransicaoInvalidaException`
-- [ ] Criar a instância `app = Flask(__name__)`
-- [ ] Criar a instância `central = CentralDeSupporte("Ciesa Solutions")` **fora de qualquer rota** para o estado persistir entre requisições
-- [ ] Adicionar o bloco `if __name__ == '__main__': app.run(debug=True, port=5000)` no final do arquivo
+- [x] Importar `Flask`, `request` e `jsonify` do flask
+- [x] Importar `CentralDeSupporte` do arquivo da Pessoa A/B
+- [x] Importar as três exceções customizadas: `ChamadoNaoEncontradoException`, `CapacidadeExcedidaException`, `TransicaoInvalidaException`
+- [x] Criar a instância `app = Flask(__name__)`
+- [x] Criar a instância `central = CentralDeSupporte("Ciesa Solutions")` **fora de qualquer rota** para o estado persistir entre requisições
+- [x] Adicionar o bloco `if __name__ == '__main__': app.run(debug=True, port=5000)` no final do arquivo
 
 ---
 
 ## Bloco 2 — Endpoints de chamados
 
 ### `POST /chamados`
-- [ ] Ler `titulo`, `descricao`, `cliente` e `prioridade` do body com `request.get_json()`
-- [ ] Chamar `central.abrir_chamado()` com os dados recebidos
-- [ ] Retornar o chamado serializado com `to_dict()` e status HTTP `201`
-- [ ] Capturar `ValueError` (prioridade inválida) e retornar `{'erro': ...}` com HTTP `400`
-- [ ] Capturar `KeyError` (campo ausente no body) e retornar `{'erro': ...}` com HTTP `400`
+- [x] Ler `titulo`, `descricao`, `cliente` e `prioridade` do body com `request.get_json()`
+- [x] Chamar `central.abrir_chamado()` com os dados recebidos
+- [x] Retornar o chamado serializado com `to_dict()` e status HTTP `201`
+- [x] Capturar `ValueError` (prioridade inválida) e retornar `{'erro': ...}` com HTTP `400`
+- [x] Capturar `KeyError` (campo ausente no body) e retornar `{'erro': ...}` com HTTP `400`
 
 ### `GET /chamados`
-- [ ] Ler o query param opcional `status` com `request.args.get('status')`
-- [ ] Listar todos os chamados do dicionário `central.chamados`
-- [ ] Se o param `status` foi informado, filtrar apenas os chamados com aquele status
-- [ ] Retornar a lista serializada com `to_dict()` em cada chamado e HTTP `200`
+- [x] Ler o query param opcional `status` com `request.args.get('status')`
+- [x] Listar todos os chamados do dicionário `central.chamados`
+- [x] Se o param `status` foi informado, filtrar apenas os chamados com aquele status
+- [x] Retornar a lista serializada com `to_dict()` em cada chamado e HTTP `200`
 
 ### `GET /chamados/em-atraso`
-- [ ] **Declarar esta rota antes de `GET /chamados/<int:numero>` no arquivo** — senão o Flask tenta converter `em-atraso` como inteiro e retorna erro
-- [ ] Chamar `central.listar_em_atraso()`
-- [ ] Retornar a lista serializada com `to_dict()` e HTTP `200`
+- [x] **Declarar esta rota antes de `GET /chamados/<int:numero>` no arquivo** — senão o Flask tenta converter `em-atraso` como inteiro e retorna erro
+- [x] Chamar `central.listar_em_atraso()`
+- [x] Retornar a lista serializada com `to_dict()` e HTTP `200`
 
 ### `GET /chamados/<int:numero>`
-- [ ] Chamar `central.buscar_chamado(numero)`
-- [ ] Retornar o chamado com `to_dict()` e HTTP `200`
-- [ ] Capturar `ChamadoNaoEncontradoException` e retornar `{'erro': ...}` com HTTP `404`
+- [x] Chamar `central.buscar_chamado(numero)`
+- [x] Retornar o chamado com `to_dict()` e HTTP `200`
+- [x] Capturar `ChamadoNaoEncontradoException` e retornar `{'erro': ...}` com HTTP `404`
 
 ### `PATCH /chamados/<int:numero>/status`
-- [ ] Ler `novo_status` e `responsavel` do body
-- [ ] Buscar o chamado e chamar `chamado.alterar_status(novo_status, responsavel)`
-- [ ] Retornar o chamado atualizado com HTTP `200`
-- [ ] Capturar `ChamadoNaoEncontradoException` → HTTP `404`
-- [ ] Capturar `TransicaoInvalidaException` → HTTP `400`
-- [ ] Capturar `KeyError` (campo ausente) → HTTP `400`
+- [x] Ler `novo_status` e `responsavel` do body
+- [x] Buscar o chamado e chamar `chamado.alterar_status(novo_status, responsavel)`
+- [x] Retornar o chamado atualizado com HTTP `200`
+- [x] Capturar `ChamadoNaoEncontradoException` → HTTP `404`
+- [x] Capturar `TransicaoInvalidaException` → HTTP `400`
+- [x] Capturar `KeyError` (campo ausente) → HTTP `400`
 
 ### `PATCH /chamados/<int:numero>/resolver`
-- [ ] Ler `id_tecnico` e `descricao_solucao` do body
-- [ ] Chamar `central.resolver_chamado(numero, id_tecnico, descricao_solucao)`
-- [ ] Buscar o chamado novamente e retornar com `to_dict()` e HTTP `200`
-- [ ] Capturar `ChamadoNaoEncontradoException` → HTTP `404`
-- [ ] Capturar `PermissionError` (técnico não é o responsável) → HTTP `403`
-- [ ] Capturar `TransicaoInvalidaException` ou `ValueError` → HTTP `400`
-- [ ] Capturar `KeyError` (campo ausente) → HTTP `400`
+- [x] Ler `id_tecnico` e `descricao_solucao` do body
+- [x] Chamar `central.resolver_chamado(numero, id_tecnico, descricao_solucao)`
+- [x] Buscar o chamado novamente e retornar com `to_dict()` e HTTP `200`
+- [x] Capturar `ChamadoNaoEncontradoException` → HTTP `404`
+- [x] Capturar `PermissionError` (técnico não é o responsável) → HTTP `403`
+- [x] Capturar `TransicaoInvalidaException` ou `ValueError` → HTTP `400`
+- [x] Capturar `KeyError` (campo ausente) → HTTP `400`
 
 ---
 
 ## Bloco 3 — Endpoints de técnicos
 
 ### `POST /tecnicos`
-- [ ] Ler `nome`, `especialidades` e opcionalmente `capacidade_maxima` do body
-- [ ] Usar `dados.get('capacidade_maxima', 5)` para o valor padrão quando não informado
-- [ ] Chamar `central.registrar_tecnico()` com os dados
-- [ ] Retornar o técnico serializado com `to_dict()` e HTTP `201`
-- [ ] Capturar `KeyError` (campo ausente) → HTTP `400`
+- [x] Ler `nome`, `especialidades` e opcionalmente `capacidade_maxima` do body
+- [x] Usar `dados.get('capacidade_maxima', 5)` para o valor padrão quando não informado
+- [x] Chamar `central.registrar_tecnico()` com os dados
+- [x] Retornar o técnico serializado com `to_dict()` e HTTP `201`
+- [x] Capturar `KeyError` (campo ausente) → HTTP `400`
 
 ### `GET /tecnicos`
-- [ ] Ler o query param opcional `disponivel` com `request.args.get('disponivel')`
-- [ ] Listar todos os técnicos do dicionário `central.tecnicos`
-- [ ] Se `disponivel=true`, filtrar apenas os com `tecnico.disponivel == True`
-- [ ] Se `disponivel=false`, filtrar apenas os com `tecnico.disponivel == False`
-- [ ] Retornar a lista serializada com `to_dict()` e HTTP `200`
+- [x] Ler o query param opcional `disponivel` com `request.args.get('disponivel')`
+- [x] Listar todos os técnicos do dicionário `central.tecnicos`
+- [x] Se `disponivel=true`, filtrar apenas os com `tecnico.disponivel == True`
+- [x] Se `disponivel=false`, filtrar apenas os com `tecnico.disponivel == False`
+- [x] Retornar a lista serializada com `to_dict()` e HTTP `200`
 
 ---
 
 ## Bloco 4 — Atribuição automática e painel
 
 ### `POST /atribuicao/automatica`
-- [ ] Chamar `central.atribuicao_automatica()` e guardar a quantidade retornada
-- [ ] Montar a lista dos chamados atualmente em status `'em_atendimento'`
-- [ ] Retornar dicionário com `atribuidos` (quantidade) e `chamados` (lista serializada) e HTTP `200`
+- [x] Chamar `central.atribuicao_automatica()` e guardar a quantidade retornada
+- [x] Montar a lista dos chamados atualmente em status `'em_atendimento'`
+- [x] Retornar dicionário com `atribuidos` (quantidade) e `chamados` (lista serializada) e HTTP `200`
 
 ### `GET /painel`
-- [ ] Chamar `central.painel_operacional()`
-- [ ] Retornar o resultado diretamente com `jsonify()` e HTTP `200`
+- [x] Chamar `central.painel_operacional()`
+- [x] Retornar o resultado diretamente com `jsonify()` e HTTP `200`
 
 ---
 
 ## Bloco 5 — Revisão geral antes de testar
 
-- [ ] Confirmar que toda rota retorna `jsonify()` — nunca strings ou dicionários puros
-- [ ] Confirmar que todo erro retorna `{'erro': str(e)}` com o código HTTP adequado
-- [ ] Confirmar que a rota `GET /chamados/em-atraso` está declarada antes de `GET /chamados/<int:numero>`
-- [ ] Confirmar que `central` é instanciada fora de qualquer função de rota
-- [ ] Rodar `python app.py` e verificar que o servidor sobe sem erros na porta 5000
+- [x] Confirmar que toda rota retorna `jsonify()` — nunca strings ou dicionários puros
+- [x] Confirmar que todo erro retorna `{'erro': str(e)}` com o código HTTP adequado
+- [x] Confirmar que a rota `GET /chamados/em-atraso` está declarada antes de `GET /chamados/<int:numero>`
+- [x] Confirmar que `central` é instanciada fora de qualquer função de rota
+- [x] Rodar `python app.py` e verificar que o servidor sobe sem erros na porta 5000
 
 ---
 
@@ -142,8 +142,8 @@ Execute na ordem abaixo — cada etapa depende das anteriores.
 
 ## Entrega final do trio
 
-- [ ] Confirmar que os dois arquivos estão na mesma pasta: `helpdesk_TRIO_NOMES.py` e `app.py`
-- [ ] Rodar `python helpdesk_TRIO_NOMES.py` — bloco `__main__` deve executar sem erros
-- [ ] Rodar `python app.py` — servidor deve subir sem erros
-- [ ] Executar todos os testes do Postman na sequência e confirmar que todos passam
-- [ ] Verificar que o nome do arquivo contém os nomes reais dos três integrantes
+- [x] Confirmar que os dois arquivos estão na mesma pasta: `helpdesk_TRIO_NOMES.py` e `app.py`
+- [x] Rodar `python helpdesk_TRIO_NOMES.py` — bloco `__main__` deve executar sem erros
+- [x] Rodar `python app.py` — servidor deve subir sem erros
+- [ ] Executar todos os testes do Postman na sequência e confirmar que todos passam — *manual*
+- [x] Verificar que o nome do arquivo contém os nomes reais dos três integrantes
