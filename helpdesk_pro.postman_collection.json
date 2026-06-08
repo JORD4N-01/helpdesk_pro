@@ -1,0 +1,602 @@
+{
+  "info": {
+    "name": "HelpDesk Pro",
+    "description": "Coleção para testar a API do HelpDesk Pro.\n\nFluxo recomendado:\n1. Criar técnicos\n2. Criar chamados\n3. Atribuição automática\n4. Alterar status\n5. Resolver chamado\n6. Consultar painel",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Técnicos",
+      "item": [
+        {
+          "name": "Criar técnico - Jordan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Jordan\",\n  \"especialidades\": [\"redes\", \"hardware\"],\n  \"capacidade_maxima\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tecnicos",
+              "host": ["{{base_url}}"],
+              "path": ["tecnicos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Retorna id_tecnico', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('id_tecnico');",
+                  "  pm.expect(json.nome).to.eql('Jordan');",
+                  "  pm.expect(json.disponivel).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar técnico - Maria",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria\",\n  \"especialidades\": [\"software\", \"banco_dados\"],\n  \"capacidade_maxima\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tecnicos",
+              "host": ["{{base_url}}"],
+              "path": ["tecnicos"]
+            }
+          }
+        },
+        {
+          "name": "Criar técnico - Vinicius",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Vinicius\",\n  \"especialidades\": [\"redes\", \"seguranca\"],\n  \"capacidade_maxima\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tecnicos",
+              "host": ["{{base_url}}"],
+              "path": ["tecnicos"]
+            }
+          }
+        },
+        {
+          "name": "Listar técnicos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tecnicos",
+              "host": ["{{base_url}}"],
+              "path": ["tecnicos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Retorna array', () => {",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar técnicos disponíveis",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tecnicos?disponivel=true",
+              "host": ["{{base_url}}"],
+              "path": ["tecnicos"],
+              "query": [
+                { "key": "disponivel", "value": "true" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Todos disponiveis', () => {",
+                  "  pm.response.json().forEach(t => pm.expect(t.disponivel).to.be.true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chamados",
+      "item": [
+        {
+          "name": "Criar chamado - Crítico",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"PC nao liga\",\n  \"descricao\": \"Fonte queimada\",\n  \"cliente\": \"Empresa X\",\n  \"prioridade\": \"critica\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Dados do chamado', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('numero');",
+                  "  pm.expect(json.prioridade).to.eql('critica');",
+                  "  pm.expect(json.sla_horas).to.eql(4);",
+                  "  pm.expect(json.status).to.eql('aberto');",
+                  "  pm.expect(json.tecnico).to.be.null;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar chamado - Alta",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Internet lenta\",\n  \"descricao\": \"Queda de pacotes\",\n  \"cliente\": \"Empresa Y\",\n  \"prioridade\": \"alta\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          }
+        },
+        {
+          "name": "Criar chamado - Média",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Sistema trava\",\n  \"descricao\": \"Erro ao salvar\",\n  \"cliente\": \"Empresa Z\",\n  \"prioridade\": \"media\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          }
+        },
+        {
+          "name": "Criar chamado - Baixa",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Trocar mouse\",\n  \"descricao\": \"Mouse com defeito\",\n  \"cliente\": \"Empresa X\",\n  \"prioridade\": \"baixa\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          }
+        },
+        {
+          "name": "Listar chamados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar chamados por status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chamados?status=aberto",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"],
+              "query": [
+                { "key": "status", "value": "aberto" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar chamado por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chamados/1",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Retorna chamado', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('numero', 1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chamados em atraso (SLA)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chamados/em-atraso",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "em-atraso"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Status",
+      "item": [
+        {
+          "name": "Iniciar atendimento",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"novo_status\": \"em_atendimento\",\n  \"responsavel\": \"Jordan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "1", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status alterado', () => {",
+                  "  pm.expect(pm.response.json().status).to.eql('em_atendimento');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aguardar cliente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"novo_status\": \"aguardando_cliente\",\n  \"responsavel\": \"Jordan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Resolver chamado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tecnico\": 1,\n  \"descricao_solucao\": \"Substituida fonte de alimentacao\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados/1/resolver",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "1", "resolver"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status resolvido', () => {",
+                  "  pm.expect(pm.response.json().status).to.eql('resolvido');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fechar chamado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"novo_status\": \"fechado\",\n  \"responsavel\": \"Jordan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "1", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Atribuição",
+      "item": [
+        {
+          "name": "Atribuição automática",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/atribuicao/automatica",
+              "host": ["{{base_url}}"],
+              "path": ["atribuicao", "automatica"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Atribuiu chamados', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('atribuidos');",
+                  "  pm.expect(json.chamados).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Painel",
+      "item": [
+        {
+          "name": "Dashboard (painel)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/painel",
+              "host": ["{{base_url}}"],
+              "path": ["painel"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Estrutura do painel', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('empresa');",
+                  "  pm.expect(json).to.have.property('chamados_por_status');",
+                  "  pm.expect(json).to.have.property('total_chamados');",
+                  "  pm.expect(json).to.have.property('em_atraso');",
+                  "  pm.expect(json).to.have.property('tecnicos_disponiveis');",
+                  "  pm.expect(json).to.have.property('top3_clientes');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Erros (testes negativos)",
+      "item": [
+        {
+          "name": "Campo obrigatório ausente",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Mensagem de erro', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('erro');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prioridade inválida",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Teste\",\n  \"descricao\": \"Teste\",\n  \"cliente\": \"Teste\",\n  \"prioridade\": \"urgente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados",
+              "host": ["{{base_url}}"],
+              "path": ["chamados"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transição de status inválida",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"novo_status\": \"fechado\",\n  \"responsavel\": \"Jordan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chamados/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "1", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Erro de transicao', () => {",
+                  "  pm.expect(pm.response.json().erro).to.include('Transicao invalida');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chamado não encontrado (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chamados/999",
+              "host": ["{{base_url}}"],
+              "path": ["chamados", "999"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Mensagem de erro', () => {",
+                  "  pm.expect(pm.response.json().erro).to.include('nao encontrado');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
