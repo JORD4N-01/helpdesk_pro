@@ -245,9 +245,9 @@ class CentralDeSupporte:
 if __name__ == '__main__':
     central = CentralDeSupporte("Ciesa Solutions")
 
-    central.registrar_tecnico("Alice", {"redes", "hardware"}, 3)
-    central.registrar_tecnico("Bob", {"software", "banco_dados"}, 3)
-    central.registrar_tecnico("Carol", {"redes", "seguranca"}, 3)
+    central.registrar_tecnico("Jordan", {"redes", "hardware"}, 3)
+    central.registrar_tecnico("Maria", {"software", "banco_dados"}, 3)
+    central.registrar_tecnico("Vinicius", {"redes", "seguranca"}, 3)
     central.registrar_tecnico("David", {"hardware", "software"}, 3)
 
     central.abrir_chamado("PC nao liga", "Fonte queimada", "Empresa X", "critica")
