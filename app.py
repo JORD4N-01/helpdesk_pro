@@ -24,7 +24,7 @@ def criar_chamado():
     except ValueError as e:
         return jsonify({'erro': str(e)}), 400
     except KeyError as e:
-        return jsonify({'erro': f"Campo obrigatorio ausente: {e}"}), 400
+        return jsonify({'erro': f"Campo obrigatorio: {e}"}), 400
 
 
 @app.route('/chamados', methods=['GET'])
@@ -36,12 +36,6 @@ def listar_chamados():
     return jsonify([c.to_dict() for c in chamados]), 200
 
 
-@app.route('/chamados/em-atraso', methods=['GET'])
-def listar_em_atraso():
-    chamados = central.listar_em_atraso()
-    return jsonify([c.to_dict() for c in chamados]), 200
-
-
 @app.route('/chamados/<int:numero>', methods=['GET'])
 def buscar_chamado(numero):
     try:
@@ -49,6 +43,12 @@ def buscar_chamado(numero):
         return jsonify(chamado.to_dict()), 200
     except ChamadoNaoEncontradoException as e:
         return jsonify({'erro': str(e)}), 404
+
+
+@app.route('/chamados/em-atraso', methods=['GET'])
+def listar_em_atraso():
+    chamados = central.listar_em_atraso()
+    return jsonify([c.to_dict() for c in chamados]), 200
 
 
 @app.route('/chamados/<int:numero>/status', methods=['PATCH'])
@@ -63,7 +63,7 @@ def alterar_status(numero):
     except TransicaoInvalidaException as e:
         return jsonify({'erro': str(e)}), 400
     except KeyError as e:
-        return jsonify({'erro': f"Campo obrigatorio ausente: {e}"}), 400
+        return jsonify({'erro': f"Campo obrigatorio: {e}"}), 400
 
 
 @app.route('/chamados/<int:numero>/resolver', methods=['PATCH'])
@@ -80,7 +80,7 @@ def resolver_chamado(numero):
     except (TransicaoInvalidaException, ValueError) as e:
         return jsonify({'erro': str(e)}), 400
     except KeyError as e:
-        return jsonify({'erro': f"Campo obrigatorio ausente: {e}"}), 400
+        return jsonify({'erro': f"Campo obrigatorio: {e}"}), 400
 
 
 @app.route('/tecnicos', methods=['POST'])
@@ -91,7 +91,7 @@ def criar_tecnico():
         tecnico = central.registrar_tecnico(dados['nome'], dados['especialidades'], capacidade)
         return jsonify(tecnico.to_dict()), 201
     except KeyError as e:
-        return jsonify({'erro': f"Campo obrigatorio ausente: {e}"}), 400
+        return jsonify({'erro': f"Campo obrigatorio: {e}"}), 400
 
 
 @app.route('/tecnicos', methods=['GET'])
@@ -108,7 +108,10 @@ def listar_tecnicos():
 @app.route('/atribuicao/automatica', methods=['POST'])
 def atribuicao_automatica():
     atribuidos = central.atribuicao_automatica()
-    chamados = [c.to_dict() for c in central.chamados.values() if c.status == 'em_atendimento']
+    chamados = [
+        c.to_dict() for c in central.chamados.values()
+        if c.status == 'em_atendimento'
+    ]
     return jsonify({'atribuidos': atribuidos, 'chamados': chamados}), 200
 
 
